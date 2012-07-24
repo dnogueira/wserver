@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>HTML5 Image Uploader</title>
+		<style>
+			#previewer img {
+				width: 50px;
+				height: 50px;
+				margin: 5px;
+			}
+		</style>
+	</head>
+	<body>
+	<script language="javascript">
+
+	function start() {
+		var ws = new WebSocket('ws://localhost:8080');
+		ws.binaryType = 'arraybuffer';
+
+		ws.onclose = function(e) {
+			console.log('Close websocket', e);
+			
+		}
+		ws.onerror = function(e) {
+			console.log('websocket error', e);
+			
+		}
+		ws.onopen = function(e) {
+			console.log('Open websocket', e);
+			
+		}
+		ws.onmessage = function(e) {
+			console.log('About to decode ' + e.data.byteLength + ' bytes');
+			
+		}
+	}
+
+	var onEvent = function (eventName, event) {
+		console.log("Event: "+eventName, event);
+	}
+
+	var createPreview = function (dataURL){
+		var img = document.createElement('IMG');
+		img.src = dataURL;
+
+		//console.log(img);
+
+		document.getElementById("previewer").appendChild(img);
+	}
+
+	function processFiles(fileNode){
+		document.getElementById("previewer").innerHTML = "";
+
+		
+		var files = fileNode.files;
+
+		for(var i=0; i<files.length; i++){
+			console.log("readFile", i);
+			var reader = new FileReader();
+			reader.readAsDataURL(files[i]);
+			reader.onabort = function (e) { onEvent('onabort', e) };
+			reader.onerror = function (e) { onEvent('onerror', e) };
+			reader.onload = function (e) { onEvent('onload', e) };
+			reader.onloadend = function (e) { onEvent('onloadend', e); createPreview(e.target.result); };
+			reader.onloadstart = function (e) { onEvent('onloadstart', e) };
+			reader.onprogress = function (e) { onEvent('onprogress', e) };
+		}
+
+	}
+
+	function submitFiles() {
+		var files = document.getElementById("file").files;
+
+		// for(var i=0; i<files.length; i++){
+		// 	var data = files[i]; 
+
+				var ws = new WebSocket('ws://localhost:8080');
+				ws.binaryType = 'arraybuffer';
+
+				ws.onclose = function(e) {
+					console.log('Close websocket', e);
+					
+				}
+				ws.onerror = function(e) {
+					console.log('websocket error', e);
+					
+				}
+				ws.onopen = function(e) {
+					console.log('Open websocket', e);
+					console.log("send message: ", e);
+					for(var i=0; i<files.length; i++){
+						ws.send(files[i]);
+					}
+					//ws.send(data);
+				}
+				ws.onmessage = function(e) {
+					console.log('About to decode ' + e.data.byteLength + ' bytes');
+					
+				}	
+			// continue;
+
+
+			console.log("readFile", i);
+			var reader = new FileReader();
+			reader.readAsArrayBuffer(files[i]);
+			reader.onabort = function (e) { onEvent('onabort', e) };
+			reader.onerror = function (e) { onEvent('onerror', e) };
+			reader.onload = function (e) { onEvent('onload', e) };
+			reader.onloadend = function (e) { 
+				onEvent('onloadend', e); 
+
+				// var data = e.target.result; 
+
+				// var ws = new WebSocket('ws://localhost:8080');
+				// ws.binaryType = 'arraybuffer';
+
+				// ws.onclose = function(e) {
+				// 	console.log('Close websocket', e);
+					
+				// }
+				// ws.onerror = function(e) {
+				// 	console.log('websocket error', e);
+					
+				// }
+				// ws.onopen = function(e) {
+				// 	console.log('Open websocket', e);
+				// 	console.log("send message: ", e);
+				// 	ws.send(files[i]);
+				// 	//ws.send(data);
+				// }
+				// ws.onmessage = function(e) {
+				// 	console.log('About to decode ' + e.data.byteLength + ' bytes');
+					
+				// }			
+
+		// 	};
+		// 	reader.onloadstart = function (e) { onEvent('onloadstart', e) };
+		// 	reader.onprogress = function (e) { onEvent('onprogress', e) };
+		}
+	}
+
+	</script>
+
+	<input type="file" id="file" multiple="multiple" onchange="processFiles(this)"/>
+	<div id="previewer"></div>
+
+	<input type="button" id="submit" value="upload" onclick="submitFiles()" />
+
+	</body>
+</html>
