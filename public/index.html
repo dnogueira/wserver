@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>HTML5 Web Audio Example</title>
+	</head>
+	<body>
+	<script language="javascript">
+
+	function start() {
+		var ws = new WebSocket('ws://localhost:8080/data');
+		ws.binaryType = 'arraybuffer';
+
+		ws.onclose = function(e) {
+			console.log('Close websocket', e);
+			
+		}
+		ws.onerror = function(e) {
+			console.log('websocket error', e);
+			
+		}
+		ws.onopen = function(e) {
+			console.log('Open websocket', e);
+			
+		}
+		ws.onmessage = function(e) {
+			console.log('About to decode ' + e.data.byteLength + ' bytes');
+			
+		}
+	}
+
+	</script>
+
+	<input type="button" value="Start" onclick="start()" />
+
+	</body>
+</html>
