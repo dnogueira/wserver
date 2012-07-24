@@ -2,6 +2,19 @@ var fs = require("fs");
 var util = require("util");
 var crypto = require('crypto')
 
+
+//-----
+var express = require("express");
+var app = express.createServer();
+
+app.use(express.static(__dirname + '/public'));
+
+app.listen(8081);
+
+//----
+
+
+
 var log = console.log;
 
 var secure = true; //use https
